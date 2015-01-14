@@ -45,7 +45,7 @@ class AbstractPoppyCreature(Robot):
             if simulated != 'vrep':
                 raise ValueError('Unknown simulation mode: "{}"'.format(simulated))
 
-            from pypot.robot import from_vrep
+            from pypot.vrep import from_vrep
 
             scene_path = os.path.join(base_path, 'vrep-scene')
 
