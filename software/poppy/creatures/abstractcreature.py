@@ -35,7 +35,7 @@ class AbstractPoppyCreature(Robot):
                              'when using a simulated version!')
 
         creature = camelcase_to_underscore(cls.__name__)
-        base_path = os.path.join(os.path.dirname(__import__(creature).__file__), '..')
+        base_path = os.path.dirname(__import__(creature).__file__)
 
         if config is None:
             config = os.path.join(os.path.join(base_path, 'configuration'),
