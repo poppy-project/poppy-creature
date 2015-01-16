@@ -14,14 +14,14 @@ class AbstractPoppyCreature(Robot):
 
     def __new__(cls,
                 config=None,
-                simulated=None, scene=None, host='127.0.0.1', port=19997, id=0):
+                simulator=None, scene=None, host='127.0.0.1', port=19997, id=0):
         """ Poppy Creature Factory.
 
         Creates a Robot (real or simulated) and specifies it to make it a specific Poppy Creature.
 
         :param str config: path to a specific json config (if None uses the default config of the poppy creature - e.g. poppy_humanoid.json)
 
-        :param str simulated: name of the simulation used (only vrep for the moment)
+        :param str simulator: name of the simulator used (only vrep for the moment)
         :param str scene: specify a particular simulation scene (if None uses the default scene of the poppy creature - e.g. poppy_humanoid.ttt)
         :param str host: host of the simulator
         :param int port: port of the simulator
@@ -30,7 +30,7 @@ class AbstractPoppyCreature(Robot):
         .. warning:: You can not specify a particular config when using a simulated robot!
 
         """
-        if config and simulated:
+        if config and simulator:
             raise ValueError('Cannot set a specific config '
                              'when using a simulated version!')
 
@@ -41,9 +41,9 @@ class AbstractPoppyCreature(Robot):
             config = os.path.join(os.path.join(base_path, 'configuration'),
                                   '{}.json'.format(creature))
 
-        if simulated is not None:
-            if simulated != 'vrep':
-                raise ValueError('Unknown simulation mode: "{}"'.format(simulated))
+        if simulator is not None:
+            if simulator != 'vrep':
+                raise ValueError('Unknown simulation mode: "{}"'.format(simulator))
 
             from pypot.vrep import from_vrep
 
