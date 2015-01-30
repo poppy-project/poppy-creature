@@ -62,9 +62,11 @@ class AbstractPoppyCreature(Robot):
             # TODO: use the id so we can have multiple poppy creatures
             # inside a single vrep scene
             poppy_creature = from_vrep(config, host, port, scene)
+            poppy_creature.simulated = True
 
         else:
             poppy_creature = from_json(config)
+            poppy_creature.simulated = False
 
         cls.setup(poppy_creature)
 
