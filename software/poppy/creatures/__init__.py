@@ -9,3 +9,8 @@ try:
     from poppy_ergo import PoppyErgo
 except ImportError:
     pass
+
+try:
+    from poppy_ergo_mini import PoppyErgoMini
+except ImportError:
+    pass
