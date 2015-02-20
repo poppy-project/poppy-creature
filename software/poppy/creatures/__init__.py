@@ -11,6 +11,6 @@ except ImportError:
     pass
 
 try:
-    from poppy_ergo_mini import PoppyErgoMini
+    from poppy_ergo_jr import PoppyErgoJr
 except ImportError:
     pass
