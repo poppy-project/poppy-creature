@@ -2,6 +2,7 @@ import os
 import re
 
 from pypot.robot import Robot, from_json
+from pypot.server.snap import SnapRobotServer
 
 
 def camelcase_to_underscore(name):
@@ -15,6 +16,7 @@ class AbstractPoppyCreature(Robot):
     def __new__(cls,
                 config=None,
                 simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
+                use_snap=False, snap_host='127.0.0.1', snap_port=6969,
                 sync=True):
         """ Poppy Creature Factory.
 
@@ -69,6 +71,9 @@ class AbstractPoppyCreature(Robot):
         else:
             poppy_creature = from_json(config, sync)
             poppy_creature.simulated = False
+
+        if use_snap:
+            poppy_creature.snap = SnapRobotServer(poppy_creature, snap_host, snap_port)
 
         cls.setup(poppy_creature)
 
