@@ -16,7 +16,7 @@ class AbstractPoppyCreature(Robot):
     def __new__(cls,
                 config=None,
                 simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
-                use_snap=False, snap_host='127.0.0.1', snap_port=6969,
+                use_snap=False, snap_host='0.0.0.0', snap_port=6969,
                 sync=True):
         """ Poppy Creature Factory.
 
