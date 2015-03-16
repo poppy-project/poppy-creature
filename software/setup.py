@@ -27,6 +27,12 @@ setup(name='poppy-creature',
 
       zip_safe=False,
 
+      entry_points={
+            'console_scripts': [
+                'poppy-sim=poppy.creatures.poppy_sim:main',
+            ],
+        },
+
       author='Pierre Rouanet, Matthieu Lapeyre',
       author_email='pierre.rouanet@gmail.com',
       description='Abstract Poppy Creature Software Library',
