@@ -29,7 +29,7 @@ setup(name='poppy-creature',
 
       entry_points={
             'console_scripts': [
-                'poppy-sim=poppy.creatures.poppy_sim:main',
+                'poppy-shell=poppy.creatures.poppy_sim:main',
             ],
         },
 

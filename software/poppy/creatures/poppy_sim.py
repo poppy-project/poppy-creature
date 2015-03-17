@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-V-REP Simulation / iPython launcher
+IPython Poppy Shell launcher
+
+Author: aristofor - https://github.com/aristofor
 """
 
 from IPython.config.loader import Config as ipConfig
@@ -33,7 +35,7 @@ def list_creatures():
         print('    {}'.format(shortcut))
 
 
-def launch_creature(name):
+def launch_creature(name, vrep):
     """
     Loads creature's class and launches a shell.
     Note: name is case insensitive.
@@ -49,7 +51,11 @@ def launch_creature(name):
         sys.stderr.write("Creature not found : {}\n".format(name))
         sys.exit(1)
 
-    ns = { 'poppy' : cls(simulator='vrep') }
+    poppy_args = {}
+    if vrep:
+        poppy_args['simulator'] = 'vrep'
+
+    ns = { 'poppy' : cls(**poppy_args) }
     banner = 'poppy : {}'.format(cls.__name__)
     cfg = ipConfig()
     cfg.TerminalInteractiveShell.confirm_exit = False
@@ -62,15 +68,25 @@ def main():
     Entry point
     """
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Poppy V-REP simulation/iPython launcher.')
-    parser.add_argument('-l', '--list', help="List poppy creatures", action="store_true")
-    parser.add_argument(dest='creature', help="Poppy creature name", action="store", nargs='?')
+    parser = ArgumentParser(description='IPython Poppy Shell launcher.')
+
+    parser.add_argument('-l', '--list',
+                        help="List poppy creatures",
+                        action="store_true")
+
+    parser.add_argument('--vrep',
+                        action='store_true',
+                        help='Use a V-REP simulated Poppy Creature')
+
+    parser.add_argument(dest='creature',
+                        help="Poppy creature name",
+                        action="store", nargs='?')
 
     args = parser.parse_args()
 
     if args.list:
         list_creatures()
     elif args.creature:
-        launch_creature(args.creature)
+        launch_creature(args.creature, args.vrep)
     else:
         parser.print_help()
