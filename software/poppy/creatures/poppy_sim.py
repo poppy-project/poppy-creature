@@ -6,6 +6,7 @@ IPython Poppy Shell launcher
 Author: aristofor - https://github.com/aristofor
 """
 
+from pkg_resources import resource_filename
 from IPython.config.loader import Config as ipConfig
 from IPython.terminal.embed import InteractiveShellEmbed
 import re
@@ -55,11 +56,16 @@ def launch_creature(name, vrep):
     if vrep:
         poppy_args['simulator'] = 'vrep'
 
+    with open(resource_filename('poppy', 'logo.ascii')) as f:
+        poppy_welcome = f.read()
+
+    poppy_welcome += 'Poppy creature: {}'.format(name)
+
     ns = { 'poppy' : cls(**poppy_args) }
     banner = 'poppy : {}'.format(cls.__name__)
     cfg = ipConfig()
     cfg.TerminalInteractiveShell.confirm_exit = False
-    shell = InteractiveShellEmbed(config=cfg, user_ns=ns, banner2=banner)
+    shell = InteractiveShellEmbed(config=cfg, user_ns=ns, banner2=poppy_welcome)
     shell()
 
 
