@@ -30,6 +30,7 @@ setup(name='poppy-creature',
       entry_points={
             'console_scripts': [
                 'poppy-shell=poppy.creatures.poppy_sim:main',
+                'poppy-snap=poppy.creatures.snap_launcher:main',
             ],
         },
 
