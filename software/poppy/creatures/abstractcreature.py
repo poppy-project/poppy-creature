@@ -14,7 +14,7 @@ class AbstractPoppyCreature(Robot):
     """ Abstract Class for Any Poppy Creature. """
 
     def __new__(cls,
-                config=None,
+                base_path=None, config=None,
                 simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969,
                 sync=True):
@@ -39,7 +39,8 @@ class AbstractPoppyCreature(Robot):
                              'when using a simulated version!')
 
         creature = camelcase_to_underscore(cls.__name__)
-        base_path = os.path.dirname(__import__(creature).__file__)
+        base_path = (os.path.dirname(__import__(creature).__file__)
+                     if base_path is None else base_path)
 
         if config is None:
             config = os.path.join(os.path.join(base_path, 'configuration'),
