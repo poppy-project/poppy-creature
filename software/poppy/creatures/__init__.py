@@ -21,5 +21,5 @@ for creature in installed_poppy_creatures_packages():
         installed_poppy_creatures[creature] = cls
         setattr(module, cls_name, cls)
 
-    except ImportError:
+    except (ImportError, AttributeError):
         pass
