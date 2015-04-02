@@ -6,6 +6,15 @@ import webbrowser
 
 from poppy.creatures import installed_poppy_creatures
 
+
+def find_local_ip():
+    print 'salut !'
+    # This is rather obscure...
+    # go see here: http://stackoverflow.com/questions/166506/
+    return [(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close())
+            for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('creature', type=str,
@@ -25,7 +34,7 @@ def main():
 
     snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
     block_url = 'http://{}:{}/snap-blocks.xml'.format(
-        socket.gethostbyname(socket.gethostname()),
+        find_local_ip(),
         poppy.snap.port)
 
     url = '{}#open:{}'.format(snap_url, block_url)
