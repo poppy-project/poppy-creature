@@ -8,7 +8,6 @@ from poppy.creatures import installed_poppy_creatures
 
 
 def find_local_ip():
-    print 'salut !'
     # This is rather obscure...
     # go see here: http://stackoverflow.com/questions/166506/
     return [(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close())
