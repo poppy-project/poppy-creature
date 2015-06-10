@@ -1,8 +1,27 @@
+import logging
 import os
 import re
+from threading import Thread
 
 from pypot.robot import Robot, from_json
 from pypot.server.snap import SnapRobotServer
+
+logger = logging.getLogger(__name__)
+SERVICE_THREADS = {}
+
+
+class DeamonThread(Thread):
+
+    def __init__(self, *args, **kwargs):
+        Thread.__init__(self, *args, **kwargs)
+        self.setDaemon(True)
+
+    def run(self, *args, **kwargs):
+        try:
+            logger.info("Start thread %s" % self)
+            Thread.run(self, *args, **kwargs)
+        except:
+            logger.exception("Error on thread %s " % self)
 
 
 def camelcase_to_underscore(name):
@@ -11,12 +30,15 @@ def camelcase_to_underscore(name):
 
 
 class AbstractPoppyCreature(Robot):
+
     """ Abstract Class for Any Poppy Creature. """
 
     def __new__(cls,
                 base_path=None, config=None,
                 simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969,
+                use_http=False, http_host='0.0.0.0', http_port=8080,
+                use_remote=False, remote_host='0.0.0.0', remote_port=4242,
                 sync=True):
         """ Poppy Creature Factory.
 
@@ -30,6 +52,7 @@ class AbstractPoppyCreature(Robot):
         :param int port: port of the simulator
         :param int id: id of robot in the v-rep scene (not used yet!)
         :param bool sync: choose if automatically starts the synchronization loops
+
 
         .. warning:: You can not specify a particular config when using a simulated robot!
 
@@ -76,9 +99,29 @@ class AbstractPoppyCreature(Robot):
         if use_snap:
             poppy_creature.snap = SnapRobotServer(poppy_creature, snap_host, snap_port)
 
+        if(use_http):
+            from pypot.server.httpserver import HTTPRobotServer
+            poppy_creature.http = HTTPRobotServer(poppy_creature, http_host, http_port, cross_domain_origin="*")
+
+        if(use_remote):
+            from pypot.server import RemoteRobotServer
+            poppy_creature.remote = RemoteRobotServer(poppy_creature, remote_host, remote_port)
+
         cls.setup(poppy_creature)
 
         return poppy_creature
+
+    @classmethod
+    def start_background_services(cls, robot, services=['snap', 'http', 'remote']):
+        for service in services:
+            if(hasattr(robot, service)):
+                if service in SERVICE_THREADS:
+                    logger.warning("A {} background service is already running, you may have to restart your script or reset your notebook kernel to start it again.".format(service))
+                else:
+                    SERVICE_THREADS[service] = DeamonThread(target=getattr(robot, service).run, name="{}_server".format(service))
+                    SERVICE_THREADS[service].daemon = True
+                    SERVICE_THREADS[service].start()
+                    logger.info("Starting {} service".format(service))
 
     @classmethod
     def setup(cls, robot):
