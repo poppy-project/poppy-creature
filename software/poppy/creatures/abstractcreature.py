@@ -16,7 +16,7 @@ class AbstractPoppyCreature(Robot):
     def __new__(cls,
                 base_path=None, config=None,
                 simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
-                use_snap=False, snap_host='0.0.0.0', snap_port=6969,
+                use_snap=False, snap_host='0.0.0.0', snap_port=6969, snap_quiet=True,
                 sync=True):
         """ Poppy Creature Factory.
 
@@ -74,7 +74,7 @@ class AbstractPoppyCreature(Robot):
             poppy_creature.simulated = False
 
         if use_snap:
-            poppy_creature.snap = SnapRobotServer(poppy_creature, snap_host, snap_port)
+            poppy_creature.snap = SnapRobotServer(poppy_creature, snap_host, snap_port, quiet=snap_quiet)
 
         cls.setup(poppy_creature)
 

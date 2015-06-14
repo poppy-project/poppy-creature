@@ -10,6 +10,7 @@ from pkg_resources import resource_filename
 from IPython.config.loader import Config as ipConfig
 from IPython.terminal.embed import InteractiveShellEmbed
 from poppy.creatures import installed_poppy_creatures
+from argparse import ArgumentParser
 
 
 def launch_creature(name, vrep):
@@ -35,17 +36,16 @@ def main():
     """
     Entry point
     """
-    from argparse import ArgumentParser
     parser = ArgumentParser(description='IPython Poppy Shell launcher.')
 
     parser.add_argument(dest='creature', type=str,
-                        help="Poppy creature name",
+                        help="poppy creature name",
                         action="store", nargs='?',
                         choices=installed_poppy_creatures.keys())
 
     parser.add_argument('--vrep',
                         action='store_true',
-                        help='Use a V-REP simulated Poppy Creature')
+                        help='use a V-REP simulated Poppy Creature')
 
     args = parser.parse_args()
 
