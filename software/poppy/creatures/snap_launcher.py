@@ -16,7 +16,9 @@ def find_local_ip():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Snap! launcher for Poppy creatures')
+
+    deprecation_warning = 'poppy-snap is depreciated, it will be deleted in a next release. Use poppy-services instead'
+    parser = argparse.ArgumentParser(description='Snap! launcher for Poppy creatures', usage=deprecation_warning)
     parser.add_argument('creature', type=str,
                         help='poppy creature name',
                         action='store',  nargs='?',
@@ -58,6 +60,7 @@ def main():
         print('Snap is now running on: "{}"\n'.format(url))
     else:
         webbrowser.open(url, new=0, autoraise=True)
+    print(deprecation_warning)
 
     poppy.snap.run()
 
