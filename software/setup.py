@@ -18,7 +18,7 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot[http-server]>=2.2', 'bottle'],
+      install_requires=['pypot[http-server]>=2.7.2', 'bottle'],
 
       setup_requires=['setuptools_git >= 0.3', ],
 
@@ -28,11 +28,12 @@ setup(name='poppy-creature',
       zip_safe=False,
 
       entry_points={
-            'console_scripts': [
-                'poppy-shell=poppy.creatures.poppy_sim:main',
-                'poppy-snap=poppy.creatures.snap_launcher:main',
-            ],
-        },
+          'console_scripts': [
+              'poppy-shell=poppy.creatures.poppy_sim:main',
+              'poppy-snap=poppy.creatures.snap_launcher:main',
+              'poppy-services=poppy.creatures.services_launcher:main',
+          ],
+      },
 
       author='Pierre Rouanet, Matthieu Lapeyre',
       author_email='pierre.rouanet@gmail.com',
