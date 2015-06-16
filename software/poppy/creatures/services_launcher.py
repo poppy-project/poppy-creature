@@ -44,8 +44,12 @@ def main():
     args = parser.parse_args()
 
     if not args.creature:
-        parser.print_help()
-        sys.exit(0)
+        if len(installed_poppy_creatures.keys()) == 1:
+            args.creature = installed_poppy_creatures.keys()[0]
+            print('No creature specified, use {}'.format(installed_poppy_creatures.keys()[0]))
+        else:
+            parser.print_help()
+            sys.exit(0)
 
     poppy_args = {
         'use_snap': args.snap,

@@ -11,6 +11,7 @@ from IPython.config.loader import Config as ipConfig
 from IPython.terminal.embed import InteractiveShellEmbed
 from poppy.creatures import installed_poppy_creatures
 from argparse import ArgumentParser
+import sys
 
 
 def launch_creature(name, vrep):
@@ -49,7 +50,11 @@ def main():
 
     args = parser.parse_args()
 
-    if args.creature:
-        launch_creature(args.creature, args.vrep)
-    else:
-        parser.print_help()
+    if not args.creature:
+        if len(installed_poppy_creatures.keys()) == 1:
+            args.creature = installed_poppy_creatures.keys()[0]
+            print('No creature specified, use {}'.format(installed_poppy_creatures.keys()[0]))
+        else:
+            parser.print_help()
+            sys.exit(0)
+    launch_creature(args.creature, args.vrep)
