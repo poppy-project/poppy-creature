@@ -35,7 +35,7 @@ class AbstractPoppyCreature(Robot):
 
     def __new__(cls,
                 base_path=None, config=None,
-                simulator=None, scene=None, host='127.0.0.1', port=19997, id=0,
+                simulator=None, scene=None, host='localhost', port=19997, id=0,
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969, snap_quiet=True,
                 use_http=False, http_host='0.0.0.0', http_port=8080, http_quiet=True,
                 use_remote=False, remote_host='0.0.0.0', remote_port=4242,
