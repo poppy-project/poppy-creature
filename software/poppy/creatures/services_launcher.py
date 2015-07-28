@@ -29,7 +29,7 @@ def main():
     parser.add_argument('--snap',
                         help='start a snap robot server',
                         action='store_true')
-    parser.add_argument('--no-browser',
+    parser.add_argument('-nb', '--no-browser',
                         help='avoid automatic start of Snap! in web browser',
                         action='store_true')
     parser.add_argument('--http',
