@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
-    parser.add_argument('--no-browser',
+    parser.add_argument('-nb', '--no-browser',
                         help='avoid automatic start of Snap! in web browser',
                         action='store_true')
     parser.add_argument('-v', '--verbose',
