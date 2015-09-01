@@ -18,7 +18,7 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot[http-server]>=2.7.2', 'bottle'],
+      install_requires=['pypot[http-server]>=2.9.0', 'bottle'],
 
       setup_requires=['setuptools_git >= 0.3', ],
 

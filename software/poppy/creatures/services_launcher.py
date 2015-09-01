@@ -26,6 +26,9 @@ def main():
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
+    parser.add_argument('--threejs',
+                        help='use a Three.js visualization',
+                        action='store_true')
     parser.add_argument('--snap',
                         help='start a snap robot server',
                         action='store_true')
@@ -61,9 +64,13 @@ def main():
         poppy_args['snap_quiet'] = False
         poppy_args['http_quiet'] = False
 
-    if any([args.snap, args.http, args.remote]):
+    if any([args.snap, args.http, args.remote, args.threejs]):
         if args.vrep:
             poppy_args['simulator'] = 'vrep'
+        elif args.threejs:
+            poppy_args['simulator'] = 'threejs'
+            # Three.js needs to conncet to a webserver.
+            poppy_args['use_http'] = True
 
         poppy = installed_poppy_creatures[args.creature](**poppy_args)
         AbstractPoppyCreature.start_background_services(poppy)
