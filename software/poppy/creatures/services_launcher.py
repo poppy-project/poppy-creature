@@ -6,7 +6,7 @@ import time
 import sys
 import webbrowser
 
-from poppy.creatures import installed_poppy_creatures
+from . import installed_poppy_creatures
 from .abstractcreature import AbstractPoppyCreature
 
 
