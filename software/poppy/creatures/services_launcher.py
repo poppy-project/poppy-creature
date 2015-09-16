@@ -82,7 +82,14 @@ def main():
 
             print('Snap is now running on: "{}"\n'.format(url))
             if not args.no_browser:
-                webbrowser.open(url, new=0, autoraise=True)
+                # Open the url in a webkit browser if possible (faster than with fireox/gecko)
+                for browser_name in ['chromium','chromium-browser','chrome','midori','safari',None]:
+                    try:
+                        browser = webbrowser.get(browser_name)
+                        break
+                    except:
+                        continue
+                browser.open(url, new=0, autoraise=True)
 
         print("Services started")
         try:
