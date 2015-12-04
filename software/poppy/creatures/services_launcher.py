@@ -8,12 +8,9 @@ import logging
 import argparse
 from argparse import RawTextHelpFormatter
 
-<<<<<<< HEAD
 from pypot.server.snap import find_local_ip
-from poppy.creatures import installed_poppy_creatures
-=======
+
 from . import installed_poppy_creatures
->>>>>>> 303e875c35b9e268c0daba628ff216afec5922c6
 from .abstractcreature import AbstractPoppyCreature
 
 
