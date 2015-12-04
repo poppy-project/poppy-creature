@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 
-import socket
 import argparse
 import webbrowser
 import sys
 
 from poppy.creatures import installed_poppy_creatures
-
-
-def find_local_ip():
-    # This is rather obscure...
-    # go see here: http://stackoverflow.com/questions/166506/
-    return [(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close())
-            for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
+from pypot.server.snap import find_local_ip
 
 
 def main():
@@ -63,8 +56,14 @@ def main():
     if args.no_browser:
         print('Snap is now running on: "{}"\n'.format(url))
     else:
-        webbrowser.open(url, new=0, autoraise=True)
-    print(deprecation_warning)
+        for bowser_name in ['chromium-browser', 'chromium', 'google-chrome', 'chrome',
+                                                            'safari', 'firefox', None]:
+            try:
+                browser = webbrowser.get(bowser_name)
+                browser.open(url, new=0, autoraise=True)
+                break
+            except:
+                pass
 
     poppy.snap.run()
 

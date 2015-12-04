@@ -1,24 +1,28 @@
 #!/usr/bin/env python
 
 import socket
-import argparse
 import time
 import sys
 import webbrowser
+import logging
+import argparse
+from argparse import RawTextHelpFormatter
 
+from pypot.server.snap import find_local_ip
 from poppy.creatures import installed_poppy_creatures
 from .abstractcreature import AbstractPoppyCreature
 
 
-def find_local_ip():
-    # This is rather obscure...
-    # go see here: http://stackoverflow.com/questions/166506/
-    return [(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close())
-            for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
-
-
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=('Poppy services launcher. Use it to quickly connect a ' +
+                     'poppy creature with Snap!, http server, or a remote robot.'),
+        epilog="""
+Examples:
+* poppy-services --snap poppy-torso
+* poppy-services --snap --vrep poppy-humanoid""",
+        formatter_class=RawTextHelpFormatter)
+
     parser.add_argument('creature', type=str,
                         help='poppy creature name',
                         action='store', nargs='?',
@@ -27,7 +31,7 @@ def main():
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
     parser.add_argument('--snap',
-                        help='start a snap robot server',
+                        help='start a Snap! robot server',
                         action='store_true')
     parser.add_argument('--no-browser',
                         help='avoid automatic start of Snap! in web browser',
@@ -39,8 +43,12 @@ def main():
                         help='start a remote robot server',
                         action='store_true')
     parser.add_argument('-v', '--verbose',
-                        help='start services with verbose mode',
-                        action='store_true')
+                        help='start services with verbose mode. There is 3 debug levels, add as "v" as debug level you want',
+                        action='count')
+    parser.add_argument('-f', '--log-file',
+                        help='Log filename',
+                        action='store')
+
     args = parser.parse_args()
 
     if not args.creature:
@@ -57,9 +65,29 @@ def main():
         'use_remote': args.remote
     }
 
+    if args.log_file:
+        fh = logging.FileHandler(args.log_file)
+        fh.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        logging.getLogger('').addHandler(fh)
+
     if args.verbose:
         poppy_args['snap_quiet'] = False
         poppy_args['http_quiet'] = False
+        console = logging.StreamHandler()
+        if args.verbose == 1:
+            lvl = logging.WARNING
+        elif args.verbose == 2:
+            lvl = logging.INFO
+        elif args.verbose > 2:
+            lvl = logging.DEBUG
+
+        ch = logging.FileHandler(args.log_file)
+        ch.setLevel(lvl)
+        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        ch.setFormatter(formatter)
+        logging.getLogger('').addHandler(ch)
 
     if any([args.snap, args.http, args.remote]):
         if args.vrep:
@@ -73,9 +101,16 @@ def main():
             block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), poppy.snap.port)
             url = '{}#open:{}'.format(snap_url, block_url)
 
-            print('Snap is now running on: "{}"\n'.format(url))
             if not args.no_browser:
-                webbrowser.open(url, new=0, autoraise=True)
+                for bowser_name in ['chromium-browser', 'chromium', 'google-chrome',
+                                    'chrome', 'safari', 'firefox', None]:
+                    try:
+                        browser = webbrowser.get(bowser_name)
+                        browser.open(url, new=0, autoraise=True)
+                        break
+                    except:
+                        pass
+            print('Snap! is now running on: "{}"\n'.format(url))
 
         print("Services started")
         try:
@@ -84,6 +119,6 @@ def main():
         except KeyboardInterrupt:
             print("Bye bye!")
     else:
-        print("No service specified")
+        print("No service specified. You want probably use snap")
 if __name__ == '__main__':
     main()
