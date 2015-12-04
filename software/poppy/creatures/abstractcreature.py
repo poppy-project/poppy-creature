@@ -1,9 +1,10 @@
 import logging
 import os
 import re
+
 from threading import Thread
 
-from pypot.robot import Robot, from_json
+from pypot.robot import Robot, from_json, use_dummy_robot
 from pypot.server.snap import SnapRobotServer
 
 logger = logging.getLogger(__name__)
@@ -11,7 +12,6 @@ SERVICE_THREADS = {}
 
 
 class DeamonThread(Thread):
-
     def __init__(self, *args, **kwargs):
         Thread.__init__(self, *args, **kwargs)
         self.setDaemon(True)
@@ -25,14 +25,11 @@ class DeamonThread(Thread):
 
 
 def camelcase_to_underscore(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    return re.sub('([a-z])([A-Z0-9])', r'\1_\2', name).lower()
 
 
 class AbstractPoppyCreature(Robot):
-
     """ Abstract Class for Any Poppy Creature. """
-
     def __new__(cls,
                 base_path=None, config=None,
                 simulator=None, scene=None, host='localhost', port=19997, id=0,
@@ -70,26 +67,29 @@ class AbstractPoppyCreature(Robot):
                                   '{}.json'.format(creature))
 
         if simulator is not None:
-            if simulator != 'vrep':
+            if simulator == 'vrep':
+                from pypot.vrep import from_vrep
+
+                scene_path = os.path.join(base_path, 'vrep-scene')
+
+                if scene is None:
+                    scene = '{}.ttt'.format(creature)
+
+                if not os.path.exists(scene):
+                    if ((os.path.basename(scene) != scene) or
+                            (not os.path.exists(os.path.join(scene_path, scene)))):
+                        raise ValueError('Could not find the scene "{}"!'.format(scene))
+
+                    scene = os.path.join(scene_path, scene)
+                # TODO: use the id so we can have multiple poppy creatures
+                # inside a single vrep scene
+                poppy_creature = from_vrep(config, host, port, scene)
+
+            elif simulator == 'threejs':
+                poppy_creature = use_dummy_robot(config)
+            else:
                 raise ValueError('Unknown simulation mode: "{}"'.format(simulator))
 
-            from pypot.vrep import from_vrep
-
-            scene_path = os.path.join(base_path, 'vrep-scene')
-
-            if scene is None:
-                scene = '{}.ttt'.format(creature)
-
-            if not os.path.exists(scene):
-                if ((os.path.basename(scene) != scene) or
-                        (not os.path.exists(os.path.join(scene_path, scene)))):
-                    raise ValueError('Could not find the scene "{}"!'.format(scene))
-
-                scene = os.path.join(scene_path, scene)
-
-            # TODO: use the id so we can have multiple poppy creatures
-            # inside a single vrep scene
-            poppy_creature = from_vrep(config, host, port, scene)
             poppy_creature.simulated = True
 
         else:

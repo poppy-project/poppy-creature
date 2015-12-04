@@ -10,7 +10,7 @@ from pypot.server.snap import find_local_ip
 
 def main():
 
-    deprecation_warning = 'poppy-snap is depreciated, it will be deleted in a next release. Use poppy-services instead'
+    deprecation_warning = 'poppy-snap is depreciated, it will be deleted in a next release. Use "poppy-services --snap" instead'
     parser = argparse.ArgumentParser(description='Snap! launcher for Poppy creatures', usage=deprecation_warning)
     parser.add_argument('creature', type=str,
                         help='poppy creature name',
@@ -19,7 +19,7 @@ def main():
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
-    parser.add_argument('--no-browser',
+    parser.add_argument('-nb', '--no-browser',
                         help='avoid automatic start of Snap! in web browser',
                         action='store_true')
     parser.add_argument('-v', '--verbose',
@@ -57,13 +57,14 @@ def main():
         print('Snap is now running on: "{}"\n'.format(url))
     else:
         for bowser_name in ['chromium-browser', 'chromium', 'google-chrome', 'chrome',
-                                                            'safari', 'firefox', None]:
+                                                            'safari', 'midori', None]:
             try:
                 browser = webbrowser.get(bowser_name)
                 browser.open(url, new=0, autoraise=True)
                 break
             except:
                 pass
+    print(deprecation_warning)
 
     poppy.snap.run()
 

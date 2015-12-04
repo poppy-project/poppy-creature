@@ -8,8 +8,12 @@ import logging
 import argparse
 from argparse import RawTextHelpFormatter
 
+<<<<<<< HEAD
 from pypot.server.snap import find_local_ip
 from poppy.creatures import installed_poppy_creatures
+=======
+from . import installed_poppy_creatures
+>>>>>>> 303e875c35b9e268c0daba628ff216afec5922c6
 from .abstractcreature import AbstractPoppyCreature
 
 
@@ -30,10 +34,13 @@ Examples:
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
+    parser.add_argument('--threejs',
+                        help='use a Three.js visualization',
+                        action='store_true')
     parser.add_argument('--snap',
                         help='start a Snap! robot server',
                         action='store_true')
-    parser.add_argument('--no-browser',
+    parser.add_argument('-nb', '--no-browser',
                         help='avoid automatic start of Snap! in web browser',
                         action='store_true')
     parser.add_argument('--http',
@@ -89,9 +96,13 @@ Examples:
         ch.setFormatter(formatter)
         logging.getLogger('').addHandler(ch)
 
-    if any([args.snap, args.http, args.remote]):
+    if any([args.snap, args.http, args.remote, args.threejs]):
         if args.vrep:
             poppy_args['simulator'] = 'vrep'
+        elif args.threejs:
+            poppy_args['simulator'] = 'threejs'
+            # Three.js needs to conncet to a webserver.
+            poppy_args['use_http'] = True
 
         poppy = installed_poppy_creatures[args.creature](**poppy_args)
         AbstractPoppyCreature.start_background_services(poppy)
@@ -103,7 +114,7 @@ Examples:
 
             if not args.no_browser:
                 for bowser_name in ['chromium-browser', 'chromium', 'google-chrome',
-                                    'chrome', 'safari', 'firefox', None]:
+                                    'chrome', 'safari', 'midori', None]:
                     try:
                         browser = webbrowser.get(bowser_name)
                         browser.open(url, new=0, autoraise=True)
@@ -111,6 +122,7 @@ Examples:
                     except:
                         pass
             print('Snap! is now running on: "{}"\n'.format(url))
+
 
         print("Services started")
         try:

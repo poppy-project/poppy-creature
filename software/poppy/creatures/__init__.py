@@ -1,7 +1,7 @@
 import sys
 import pip
 
-from abstractcreature import AbstractPoppyCreature
+from .abstractcreature import AbstractPoppyCreature
 
 
 def installed_poppy_creatures_packages():
