@@ -68,7 +68,7 @@ class AbstractPoppyCreature(Robot):
 
         if simulator is not None:
             if simulator == 'vrep':
-                from pypot.vrep import from_vrep
+                from pypot.vrep import from_vrep, VrepConnectionError
 
                 scene_path = os.path.join(base_path, 'vrep-scene')
 
@@ -83,7 +83,10 @@ class AbstractPoppyCreature(Robot):
                     scene = os.path.join(scene_path, scene)
                 # TODO: use the id so we can have multiple poppy creatures
                 # inside a single vrep scene
-                poppy_creature = from_vrep(config, host, port, scene)
+                try:
+                    poppy_creature = from_vrep(config, host, port, scene)
+                except VrepConnectionError:
+                    raise IOError('Connection to V-REP failed!')
 
             elif simulator == 'threejs':
                 poppy_creature = use_dummy_robot(config)
@@ -93,7 +96,10 @@ class AbstractPoppyCreature(Robot):
             poppy_creature.simulated = True
 
         else:
-            poppy_creature = from_json(config, sync)
+            try:
+                poppy_creature = from_json(config, sync)
+            except IndexError as e:
+                raise IOError('Connection to the robot failed! {}'.format(e.message))
             poppy_creature.simulated = False
 
         if use_snap:
