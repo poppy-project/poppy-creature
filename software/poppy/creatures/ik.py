@@ -1,4 +1,4 @@
-from numpy import deg2rad, rad2deg
+from numpy import deg2rad, rad2deg, array
 
 from ikpy.chain import Chain
 from ikpy.URDF_utils import get_chain_from_joints
@@ -11,13 +11,15 @@ class IKChain(Chain):
 
     """
     @classmethod
-    def from_poppy_creature(cls, poppy, motors, passiv, tip):
+    def from_poppy_creature(cls, poppy, motors, passiv, tip,
+                            inversed_motors=[]):
         """ Creates an kinematic chain from motors of a Poppy Creature.
 
             :param poppy: PoppyCreature used
             :param list motors: list of all motors that composed the kinematic chain
             :param list passiv: list of motors which are passiv in the chain (they will not move)
             :param list tip: [x, y, z] translation of the tip of the chain (in meters)
+            :param list inversed_motors: list of motors that should be manually inversed (due to a problem in the URDF?)
 
         """
         chain_elements = get_chain_from_joints(poppy.urdf_file,
@@ -31,6 +33,8 @@ class IKChain(Chain):
                                    active_links_mask=activ)
 
         chain.motors = [getattr(poppy, l.name) for l in chain.links[1:-1]]
+        chain._inversed = array([(-1 if m in inversed_motors else 1)
+                                 for m in motors])
 
         return chain
 
@@ -48,9 +52,9 @@ class IKChain(Chain):
     def goto(self, pose, duration, wait=False):
         """ Goes to a given cartesian position (in meters).
 
-            :params matrix pose: homogeneous matrix representing the target position
-            :params float duration: move duration
-            :params bool wait: whether to wait for the end of the move
+            :param matrix pose: homogeneous matrix representing the target position
+            :param float duration: move duration
+            :param bool wait: whether to wait for the end of the move
 
         """
         q0 = self.convert_to_ik_angles(self.joints_position)
@@ -71,6 +75,8 @@ class IKChain(Chain):
         raw_joints = [(j + m.offset) * (1 if m.direct else -1)
                       for j, m in zip(joints, self.motors)]
 
+        raw_joints *= self._inversed
+
         return [0] + [deg2rad(j) for j in raw_joints] + [0]
 
     def convert_from_ik_angles(self, joints):
@@ -79,6 +85,7 @@ class IKChain(Chain):
             raise ValueError('Incompatible data, len(joints) should be {}!'.format(len(self.motors) + 2))
 
         joints = [rad2deg(j) for j in joints[1:-1]]
+        joints *= self._inversed
 
         return [(j * (1 if m.direct else -1)) - m.offset
                 for j, m in zip(joints, self.motors)]
