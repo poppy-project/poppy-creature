@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 import re
 
@@ -101,6 +102,13 @@ class AbstractPoppyCreature(Robot):
             except IndexError as e:
                 raise IOError('Connection to the robot failed! {}'.format(e.message))
             poppy_creature.simulated = False
+
+        with open(config) as f:
+            poppy_creature.config = json.load(f)
+
+        urdf_file = os.path.join(os.path.join(base_path,
+                                              '{}.urdf'.format(creature)))
+        poppy_creature.urdf_file = urdf_file
 
         if use_snap:
             poppy_creature.snap = SnapRobotServer(
