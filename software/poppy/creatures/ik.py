@@ -1,4 +1,4 @@
-from numpy import deg2rad, rad2deg, array
+from numpy import deg2rad, rad2deg, array, eye
 
 from ikpy.chain import Chain
 from ikpy.URDF_utils import get_chain_from_joints
@@ -54,8 +54,20 @@ class IKChain(Chain):
         angles = self.convert_to_ik_angles(self.joints_position)
         return self.forward_kinematics(angles)[:3, 3]
 
-    def goto(self, pose, duration, wait=False):
-        """ Goes to a given cartesian position (in meters).
+    def goto(self, position, duration, wait=False):
+        """ Goes to a given cartesian position.
+
+            :param list position: [x, y, z] representing the target position (in meters)
+            :param float duration: move duration
+            :param bool wait: whether to wait for the end of the move
+
+        """
+        M = eye(4)
+        M[:3, 3] = position
+        self._goto(M, duration, wait)
+
+    def _goto(self, pose, duration, wait):
+        """ Goes to a given cartesian pose.
 
             :param matrix pose: homogeneous matrix representing the target position
             :param float duration: move duration
