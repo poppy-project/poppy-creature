@@ -33,6 +33,11 @@ class IKChain(Chain):
                                    active_links_mask=activ)
 
         chain.motors = [getattr(poppy, l.name) for l in chain.links[1:-1]]
+
+        for m, l in zip(chain.motors, chain.links[1:-1]):
+            bounds = m.__dict__['lower_limit'], m.__dict__['upper_limit']
+            l.bounds = tuple(map(rad2deg, bounds))
+
         chain._reversed = array([(-1 if m in reversed_motors else 1)
                                  for m in motors])
 
