@@ -62,6 +62,9 @@ class IKChain(Chain):
             :param bool wait: whether to wait for the end of the move
 
         """
+        if len(position) != 3:
+            raise ValueError('Position should be a list [x, y, z]!')
+
         M = eye(4)
         M[:3, 3] = position
         self._goto(M, duration, wait)
