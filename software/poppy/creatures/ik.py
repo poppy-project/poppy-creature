@@ -54,12 +54,13 @@ class IKChain(Chain):
         angles = self.convert_to_ik_angles(self.joints_position)
         return self.forward_kinematics(angles)[:3, 3]
 
-    def goto(self, position, duration, wait=False):
+    def goto(self, position, duration, wait=False, accurate=False):
         """ Goes to a given cartesian position.
 
             :param list position: [x, y, z] representing the target position (in meters)
             :param float duration: move duration
             :param bool wait: whether to wait for the end of the move
+            :param bool accurate: trade-off between accurate solution and computation time. By default, use the not so accurate but fast version.
 
         """
         if len(position) != 3:
@@ -67,18 +68,24 @@ class IKChain(Chain):
 
         M = eye(4)
         M[:3, 3] = position
-        self._goto(M, duration, wait)
+        self._goto(M, duration, wait, accurate)
 
-    def _goto(self, pose, duration, wait):
+    def _goto(self, pose, duration, wait, accurate):
         """ Goes to a given cartesian pose.
 
             :param matrix pose: homogeneous matrix representing the target position
             :param float duration: move duration
             :param bool wait: whether to wait for the end of the move
+            :param bool accurate: trade-off between accurate solution and computation time. By default, use the not so accurate but fast version.
 
         """
+
+        kwargs = {}
+        if not accurate:
+            kwargs['max_iter'] = 3
+
         q0 = self.convert_to_ik_angles(self.joints_position)
-        q = self.inverse_kinematics(pose, initial_position=q0)
+        q = self.inverse_kinematics(pose, initial_position=q0, **kwargs)
 
         joints = self.convert_from_ik_angles(q)
 
