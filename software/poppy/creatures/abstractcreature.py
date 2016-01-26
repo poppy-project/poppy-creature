@@ -96,6 +96,7 @@ class AbstractPoppyCreature(Robot):
                     raise IOError('Connection to V-REP failed!')
 
             elif simulator == 'poppy-sim':
+                use_http = True
                 poppy_creature = use_dummy_robot(config)
             else:
                 raise ValueError('Unknown simulation mode: "{}"'.format(simulator))
@@ -120,12 +121,12 @@ class AbstractPoppyCreature(Robot):
             poppy_creature.snap = SnapRobotServer(
                 poppy_creature, snap_host, snap_port, quiet=snap_quiet)
 
-        if(use_http):
+        if use_http:
             from pypot.server.httpserver import HTTPRobotServer
             poppy_creature.http = HTTPRobotServer(poppy_creature, http_host, http_port,
                                                   cross_domain_origin="*", quiet=http_quiet)
 
-        if(use_remote):
+        if use_remote:
             from pypot.server import RemoteRobotServer
             poppy_creature.remote = RemoteRobotServer(poppy_creature, remote_host, remote_port)
 
@@ -159,8 +160,3 @@ class AbstractPoppyCreature(Robot):
         """
         pass
 
-
-    def __init__( self, *args, **kwargs):
-
-        self.start_background_services()
-        super(AbstractPoppyCreature, self).__init__()
