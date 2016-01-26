@@ -31,7 +31,7 @@ Examples:
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
-    parser.add_argument('--threejs',
+    parser.add_argument('--poppy-sim',
                         help='use a Three.js visualization',
                         action='store_true')
     parser.add_argument('--snap',
@@ -93,16 +93,13 @@ Examples:
         ch.setFormatter(formatter)
         logging.getLogger('').addHandler(ch)
 
-    if any([args.snap, args.http, args.remote, args.threejs]):
+    if any([args.snap, args.http, args.remote, args.poppy_sim]):
         if args.vrep:
             poppy_args['simulator'] = 'vrep'
-        elif args.threejs:
-            poppy_args['simulator'] = 'threejs'
-            # Three.js needs to conncet to a webserver.
-            poppy_args['use_http'] = True
+        elif args.poppy_sim:
+            poppy_args['simulator'] = 'poppy-sim'
 
         poppy = installed_poppy_creatures[args.creature](**poppy_args)
-        AbstractPoppyCreature.start_background_services(poppy)
 
         if args.snap:
             snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'

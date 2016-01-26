@@ -37,17 +37,23 @@ class AbstractPoppyCreature(Robot):
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969, snap_quiet=True,
                 use_http=False, http_host='0.0.0.0', http_port=8080, http_quiet=True,
                 use_remote=False, remote_host='0.0.0.0', remote_port=4242,
-                sync=True):
+                start_background_services=True, sync=True):
         """ Poppy Creature Factory.
 
         Creates a Robot (real or simulated) and specifies it to make it a specific Poppy Creature.
 
         :param str config: path to a specific json config (if None uses the default config of the poppy creature - e.g. poppy_humanoid.json)
 
-        :param str simulator: name of the simulator used (only vrep for the moment)
+        :param str simulator: name of the simulator used : 'vrep' or 'poppy-sim'
         :param str scene: specify a particular simulation scene (if None uses the default scene of the poppy creature - e.g. poppy_humanoid.ttt)
         :param str host: host of the simulator
         :param int port: port of the simulator
+        :param bool use_snap: start or not the Snap! API
+        :param str snap_host: host of Snap! API
+        :param int snap_port: port of the Snap! 
+        :param bool use_http: start or not the HTTP API
+        :param str http_host: host of HTTP API
+        :param int http_port: port of the HTTP API
         :param int id: id of robot in the v-rep scene (not used yet!)
         :param bool sync: choose if automatically starts the synchronization loops
 
@@ -89,7 +95,7 @@ class AbstractPoppyCreature(Robot):
                 except VrepConnectionError:
                     raise IOError('Connection to V-REP failed!')
 
-            elif simulator == 'threejs':
+            elif simulator == 'poppy-sim':
                 poppy_creature = use_dummy_robot(config)
             else:
                 raise ValueError('Unknown simulation mode: "{}"'.format(simulator))
@@ -125,6 +131,9 @@ class AbstractPoppyCreature(Robot):
 
         cls.setup(poppy_creature)
 
+        if start_background_services:
+            cls.start_background_services(poppy_creature)
+
         return poppy_creature
 
     @classmethod
@@ -149,3 +158,9 @@ class AbstractPoppyCreature(Robot):
 
         """
         pass
+
+
+    def __init__( self, *args, **kwargs):
+
+        self.start_background_services()
+        super(AbstractPoppyCreature, self).__init__()
