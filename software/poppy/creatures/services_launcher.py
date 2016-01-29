@@ -31,7 +31,7 @@ Examples:
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
-    parser.add_argument('--poppy-sim',
+    parser.add_argument('--poppy-simu',
                         help='use a Three.js visualization',
                         action='store_true')
     parser.add_argument('--snap',
@@ -93,11 +93,11 @@ Examples:
         ch.setFormatter(formatter)
         logging.getLogger('').addHandler(ch)
 
-    if any([args.snap, args.http, args.remote, args.poppy_sim]):
+    if any([args.snap, args.http, args.remote, args.poppy_simu]):
         if args.vrep:
             poppy_args['simulator'] = 'vrep'
-        elif args.poppy_sim:
-            poppy_args['simulator'] = 'poppy-sim'
+        elif args.poppy_simu:
+            poppy_args['simulator'] = 'poppy-simu'
 
         poppy = installed_poppy_creatures[args.creature](**poppy_args)
 
