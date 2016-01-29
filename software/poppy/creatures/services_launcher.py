@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket
+from __future__ import print_function
 import time
 import sys
 import webbrowser
@@ -11,7 +11,6 @@ from argparse import RawTextHelpFormatter
 from pypot.server.snap import find_local_ip
 
 from . import installed_poppy_creatures
-from .abstractcreature import AbstractPoppyCreature
 
 
 def main():
