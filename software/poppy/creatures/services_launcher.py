@@ -114,7 +114,6 @@ Examples:
                         break
                     except:
                         pass
-            print('Snap! is now running on: "{}"\n'.format(url))
 
 
         print("Services started")

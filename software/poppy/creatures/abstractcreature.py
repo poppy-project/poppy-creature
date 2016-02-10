@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 import json
 import os
@@ -6,7 +8,7 @@ import re
 from threading import Thread
 
 from pypot.robot import Robot, from_json, use_dummy_robot
-from pypot.server.snap import SnapRobotServer
+from pypot.server.snap import SnapRobotServer, find_local_ip
 
 logger = logging.getLogger(__name__)
 SERVICE_THREADS = {}
@@ -120,15 +122,23 @@ class AbstractPoppyCreature(Robot):
         if use_snap:
             poppy_creature.snap = SnapRobotServer(
                 poppy_creature, snap_host, snap_port, quiet=snap_quiet)
+            snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
+            block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), snap_port)
+            url = '{}#open:{}'.format(snap_url, block_url)
+            print('SnapRobotServer is now running on: http://{}:{}\n'.format(snap_host, snap_port))
+            print('You can open Snap! interface with loaded blocks at "{}"\n'.format(url))
+
 
         if use_http:
             from pypot.server.httpserver import HTTPRobotServer
             poppy_creature.http = HTTPRobotServer(poppy_creature, http_host, http_port,
                                                   cross_domain_origin="*", quiet=http_quiet)
+            print('HTTPRobotServer is now running on: http://{}:{}\n'.format(http_host, http_port))
 
         if use_remote:
             from pypot.server import RemoteRobotServer
             poppy_creature.remote = RemoteRobotServer(poppy_creature, remote_host, remote_port)
+            print('RemoteRobotServer is now running on: http://{}:{}\n'.format(remote_host, remote_port))
 
         cls.setup(poppy_creature)
 
