@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket
+from __future__ import print_function
 import time
 import sys
 import webbrowser
@@ -11,7 +11,6 @@ from argparse import RawTextHelpFormatter
 from pypot.server.snap import find_local_ip
 
 from . import installed_poppy_creatures
-from .abstractcreature import AbstractPoppyCreature
 
 
 def main():
@@ -31,7 +30,7 @@ Examples:
     parser.add_argument('--vrep',
                         help='use a V-REP simulated Poppy Creature',
                         action='store_true')
-    parser.add_argument('--threejs',
+    parser.add_argument('--poppy-simu',
                         help='use a Three.js visualization',
                         action='store_true')
     parser.add_argument('--snap',
@@ -93,16 +92,13 @@ Examples:
         ch.setFormatter(formatter)
         logging.getLogger('').addHandler(ch)
 
-    if any([args.snap, args.http, args.remote, args.threejs]):
+    if any([args.snap, args.http, args.remote, args.poppy_simu]):
         if args.vrep:
             poppy_args['simulator'] = 'vrep'
-        elif args.threejs:
-            poppy_args['simulator'] = 'threejs'
-            # Three.js needs to conncet to a webserver.
-            poppy_args['use_http'] = True
+        elif args.poppy_simu:
+            poppy_args['simulator'] = 'poppy-simu'
 
         poppy = installed_poppy_creatures[args.creature](**poppy_args)
-        AbstractPoppyCreature.start_background_services(poppy)
 
         if args.snap:
             snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
@@ -118,7 +114,6 @@ Examples:
                         break
                     except:
                         pass
-            print('Snap! is now running on: "{}"\n'.format(url))
 
 
         print("Services started")
