@@ -96,9 +96,10 @@ def service_browser_handler(zeroconf, service_type, name, state_change):
     found["mac"] = mac_address
     found["hostname"] = hostname
     found["mac_address"] = is_poppy_board_mac(mac_address)
+    found["poppy_name"] = "poppy" in hostname
 
     # If full option is activated or found a poppy board mac address
-    if full or found["mac_address"]:
+    if full or found["mac_address"] or found["poppy_name"]:
         info = zeroconf.get_service_info(service_type, name)
         try:
             ip = socket.inet_ntoa(info.address)
@@ -110,7 +111,6 @@ def service_browser_handler(zeroconf, service_type, name, state_change):
         if ip in local_ip() or hostname == socket.gethostname():
             return
         found["home_page"] = is_poppy_home_page(ip)
-        found["poppy_name"] = "poppy" in hostname
         if found["mac_address"] or found["poppy_name"] and not found["home_page"]:
             found["up"] = ping(ip)
         found["ip"] = ip
