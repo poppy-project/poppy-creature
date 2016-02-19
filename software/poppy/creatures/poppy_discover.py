@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
-from __future__ import print_function
+from __future__ import print_function, division
 import os
 import sys
 import subprocess
 import platform
 import socket
 import urllib2
-from time import sleep
+import time
+import argparse
+from argparse import RawTextHelpFormatter
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+logging.basicConfig()
+
 
 try:
     from zeroconf import ServiceBrowser, Zeroconf
@@ -23,7 +31,8 @@ KEYS_SHORTCUT = {"mac_address": "Is a Raspberry Pi or a Odroid",
                  "poppy_name": "Has a 'poppy' name",
                  "ip": "IP address",
                  "mac": "MAC address",
-                 "hostname": "hostname"}
+                 "hostname": "hostname",
+                 "up": "online"}
 
 
 def local_ip():
@@ -62,6 +71,8 @@ def is_poppy_home_page(ip_adress, timeout=0.1):
     #     return False
     except socket.timeout:
         return False
+    except urllib2.URLError:
+        return False
 
 
 def is_poppy_board_mac(mac_address):
@@ -78,33 +89,39 @@ def is_poppy_board_mac(mac_address):
 
 
 def service_browser_handler(zeroconf, service_type, name, state_change):
+    found = {}
     hostname, other = name.split(' ')
     mac_address = other.split('.')[0].replace(']', '').replace('[', '')
 
-    info = zeroconf.get_service_info(service_type, name)
-    ip = socket.inet_ntoa(info.address)
-
-    # We don't want to return our own computer
-    if ip in local_ip() or hostname == socket.gethostname():
-        return
-    found = {}
-    found["mac_address"] = is_poppy_board_mac(mac_address)
-    found["home_page"] = is_poppy_home_page(ip)
-    found["poppy_name"] = is_poppy_board_mac(mac_address)
-    if found["mac_address"] or found["poppy_name"] and not found["home_page"]:
-        found["up"] = ping(ip)
-    found["ip"] = ip
     found["mac"] = mac_address
     found["hostname"] = hostname
+    found["mac_address"] = is_poppy_board_mac(mac_address)
+
+    # If full option is activated or found a poppy board mac address
+    if full or found["mac_address"]:
+        info = zeroconf.get_service_info(service_type, name)
+        try:
+            ip = socket.inet_ntoa(info.address)
+        except AttributeError:
+            return
+        logging.info('zeroconf find host %s at ip %s' % (hostname, ip))
+
+    # We don't want to return our own computer
+        if ip in local_ip() or hostname == socket.gethostname():
+            return
+        found["home_page"] = is_poppy_home_page(ip)
+        found["poppy_name"] = "poppy" in hostname
+        if found["mac_address"] or found["poppy_name"] and not found["home_page"]:
+            found["up"] = ping(ip)
+        found["ip"] = ip
     FOUND_HOSTS.append(found)
+    logger.info(found)
 
 
 def print_output(found_list):
     poppy_list = []
     for robot in found_list:
-        if True not in ([v for v in robot.itervalues()]):
-            break
-        else:
+        if True in ([v for v in robot.itervalues()]):
             poppy_list.append(robot)
             print("Found potential Poppy robot:")
             for key, value in robot.items():
@@ -116,12 +133,55 @@ def print_output(found_list):
 
 
 def main():
+
+    parser = argparse.ArgumentParser(
+        description=('poppy-discover try to find poppy robots in the local network \n' +
+                     'A computer is can be a poppy robot if any of these requirements is satisfied :\n' +
+                     '* Is a Raspberry Pi or a Odroid\n' +
+                     '* Has a Poppy robot home page\n' +
+                     '* Its hostname contains "poppy"'
+                     ),
+        formatter_class=RawTextHelpFormatter)
+
+    parser.add_argument('-v', '--verbose',
+                        help='display logs informations',
+                        action='store_true')
+    parser.add_argument('-t', '--timeout',
+                        help='Max time of browsing local network without result. Default is 3s',
+                        action='store')
+    parser.add_argument('--full',
+                        help='Check poppy home page for every hosts',
+                        action='store_true')
+    args = parser.parse_args()
+    timeout = int(args.timeout) if args.timeout else 3
+    global full 
+    full = args.full
+
+    if args.verbose:
+        logger.setLevel(logging.INFO)
+        logger.info("Info level activated")
+        logger.info("timeout = %s" % timeout)
+
     zeroconf = Zeroconf()
     print("\nBrowsing Poppy robots, press Ctrl-C to exit...\n")
     browser = ServiceBrowser(zeroconf, "_workstation._tcp.local.", handlers=[service_browser_handler])
 
     try:
-        sleep(3)
+        while True:
+            broken_loop = False
+            for _ in range(3):
+                results = len(FOUND_HOSTS)
+                time.sleep(timeout / 3)
+                if results != len(FOUND_HOSTS):
+                    # logger.info("Loop breaks at %s with %s hosts founds" % (_, len(FOUND_HOSTS)))
+                    broken_loop = True
+                    break
+
+            # Break while loop if no host have bee founds in {{ timeout }} seconds
+            if not broken_loop:
+                break
+            print('%s hosts founds...' % len(FOUND_HOSTS))
+
     except KeyboardInterrupt:
         pass
     finally:
