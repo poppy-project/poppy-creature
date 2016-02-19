@@ -51,7 +51,7 @@ def ping(host, timeout=1):
     Returns True if host responds to a ping request
     """
 
-    EX_OK = getattr(os, "EX_OK", 0)
+    EX_OK = getattr(os, "EX_OK", 1)
     # windows timeout is in miliseconds
     if platform.system().lower() == "windows":
         ping_params = ["-n 1", "-W %s" % (timeout * 1000), host]
