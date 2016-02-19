@@ -51,6 +51,7 @@ def ping(host, timeout=1):
     Returns True if host responds to a ping request
     """
 
+    EX_OK = getattr(os, "EX_OK", 0)
     # windows timeout is in miliseconds
     if platform.system().lower() == "windows":
         ping_params = ["-n 1", "-W %s" % (timeout * 1000), host]
@@ -62,7 +63,7 @@ def ping(host, timeout=1):
     p = subprocess.call(["ping"] + ping_params,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT)
-    return p == os.EX_OK
+    return p == EX_OK
 
 
 def is_poppy_home_page(ip_adress, timeout=0.1):
