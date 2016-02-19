@@ -15,15 +15,15 @@ except ImportError:
     print("You need to install python-zeroconf with `pip install zeroconf`")
     sys.exit(0)
 
-global found_hosts
-found_hosts = []
+global FOUND_HOSTS
+FOUND_HOSTS = []
 
-FOUND_KEYS = {"mac_address": "Is a Raspberry Pi or a Odroid",
-              "home_page": "Has a Poppy robot home page",
-              "poppy_name": "Has a 'poppy' name",
-              "ip": "IP address",
-              "mac": "MAC address",
-              "hostname": "hostname"}
+KEYS_SHORTCUT = {"mac_address": "Is a Raspberry Pi or a Odroid",
+                 "home_page": "Has a Poppy robot home page",
+                 "poppy_name": "Has a 'poppy' name",
+                 "ip": "IP address",
+                 "mac": "MAC address",
+                 "hostname": "hostname"}
 
 
 def local_ip():
@@ -35,7 +35,7 @@ def local_ip():
             if l][0][0]
 
 
-def ping(host, timeout=0.2):
+def ping(host, timeout=1):
     """
     Returns True if host responds to a ping request
     """
@@ -96,26 +96,26 @@ def service_browser_handler(zeroconf, service_type, name, state_change):
     found["ip"] = ip
     found["mac"] = mac_address
     found["hostname"] = hostname
-    found_hosts.append(found)
+    FOUND_HOSTS.append(found)
 
 
 def print_output(found_list):
     poppy_list = []
     for robot in found_list:
-        if not True in ([v for v in robot.itervalues()]):
+        if True not in ([v for v in robot.itervalues()]):
             break
         else:
             poppy_list.append(robot)
             print("Found potential Poppy robot:")
             for key, value in robot.items():
-                print("{} : {}".format(FOUND_KEYS[key], value))
+                print("{} : {}".format(KEYS_SHORTCUT[key], value))
             print("\n")
 
     if len(poppy_list) == 0:
         print("No poppy robots founds ...")
 
-if __name__ == '__main__':
 
+def main():
     zeroconf = Zeroconf()
     print("\nBrowsing Poppy robots, press Ctrl-C to exit...\n")
     browser = ServiceBrowser(zeroconf, "_workstation._tcp.local.", handlers=[service_browser_handler])
@@ -126,4 +126,7 @@ if __name__ == '__main__':
         pass
     finally:
         zeroconf.close()
-    print_output(found_hosts)
+    print_output(FOUND_HOSTS)
+
+if __name__ == '__main__':
+    main()
