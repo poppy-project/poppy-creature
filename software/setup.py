@@ -20,6 +20,8 @@ setup(name='poppy-creature',
 
       install_requires=['pypot[http-server]>=2.9.0', 'bottle', 'ikpy'],
 
+      # Extra requires avahi-browse on GNU/Linux and bonjour print services on Windows (not Pypi packets)
+      extras_require={'discover': ['zeroconf']}, 
       setup_requires=['setuptools_git >= 0.3', ],
 
       include_package_data=True,
@@ -32,6 +34,7 @@ setup(name='poppy-creature',
               'poppy-shell=poppy.creatures.poppy_sim:main',
               'poppy-snap=poppy.creatures.snap_launcher:main',
               'poppy-services=poppy.creatures.services_launcher:main',
+              'poppy-discover=poppy.creatures.poppy_discover:main',
           ],
       },
 
