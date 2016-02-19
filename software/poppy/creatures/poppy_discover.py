@@ -12,10 +12,12 @@ import argparse
 from argparse import RawTextHelpFormatter
 import logging
 
-logger = logging.getLogger()
-logger.setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.WARNING)
 logging.basicConfig()
 
+zeroconf_logger = logging.getLogger('zeroconf')
+zeroconf_logger.setLevel(logging.CRITICAL)
 
 try:
     from zeroconf import ServiceBrowser, Zeroconf
@@ -154,7 +156,7 @@ def main():
                         action='store_true')
     args = parser.parse_args()
     timeout = int(args.timeout) if args.timeout else 3
-    global full 
+    global full
     full = args.full
 
     if args.verbose:
