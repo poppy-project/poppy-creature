@@ -18,10 +18,8 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot[http-server]>=2.9.0', 'bottle', 'ikpy'],
+      install_requires=['pypot[http-server]>=2.9.0', 'bottle', 'ikpy', 'zeroconf==0.17.4'],
 
-      # Extra requires avahi-browse on GNU/Linux and bonjour print services on Windows (not Pypi packets)
-      extras_require={'discover': ['zeroconf']}, 
       setup_requires=['setuptools_git >= 0.3', ],
 
       include_package_data=True,
