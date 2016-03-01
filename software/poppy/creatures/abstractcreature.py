@@ -52,7 +52,7 @@ class AbstractPoppyCreature(Robot):
         :param int port: port of the simulator
         :param bool use_snap: start or not the Snap! API
         :param str snap_host: host of Snap! API
-        :param int snap_port: port of the Snap! 
+        :param int snap_port: port of the Snap!
         :param bool use_http: start or not the HTTP API
         :param str http_host: host of HTTP API
         :param int http_port: port of the HTTP API
@@ -128,7 +128,6 @@ class AbstractPoppyCreature(Robot):
             print('SnapRobotServer is now running on: http://{}:{}\n'.format(snap_host, snap_port))
             print('You can open Snap! interface with loaded blocks at "{}"\n'.format(url))
 
-
         if use_http:
             from pypot.server.httpserver import HTTPRobotServer
             poppy_creature.http = HTTPRobotServer(poppy_creature, http_host, http_port,
@@ -169,4 +168,3 @@ class AbstractPoppyCreature(Robot):
 
         """
         pass
-
