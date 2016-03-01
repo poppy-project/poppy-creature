@@ -35,6 +35,10 @@ class IKChain(Chain):
         chain.motors = [getattr(poppy, l.name) for l in chain.links[1:-1]]
 
         for m, l in zip(chain.motors, chain.links[1:-1]):
+            # Force an access to angle limit to retrieve real values
+            # This is quite an ugly fix and should be handled better
+            m.angle_limit
+
             bounds = m.__dict__['lower_limit'], m.__dict__['upper_limit']
             l.bounds = tuple(map(rad2deg, bounds))
 
