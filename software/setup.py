@@ -32,6 +32,7 @@ setup(name='poppy-creature',
               'poppy-shell=poppy.creatures.poppy_sim:main',
               'poppy-snap=poppy.creatures.snap_launcher:main',
               'poppy-services=poppy.creatures.services_launcher:main',
+              'poppy-configure=poppy.creatures.configure:main',
           ],
       },
 
