@@ -27,6 +27,11 @@ class DeamonThread(Thread):
             logger.exception("Error on thread %s " % self)
 
 
+class classproperty(property):
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
+
+
 def camelcase_to_underscore(name):
     return re.sub('([a-z])([A-Z0-9])', r'\1_\2', name).lower()
 
@@ -71,9 +76,11 @@ class AbstractPoppyCreature(Robot):
         base_path = (os.path.dirname(__import__(creature).__file__)
                      if base_path is None else base_path)
 
+        default_config = os.path.join(os.path.join(base_path, 'configuration'),
+                                      '{}.json'.format(creature))
+
         if config is None:
-            config = os.path.join(os.path.join(base_path, 'configuration'),
-                                  '{}.json'.format(creature))
+            config = default_config
 
         if simulator is not None:
             if simulator == 'vrep':
@@ -168,3 +175,15 @@ class AbstractPoppyCreature(Robot):
 
         """
         pass
+
+    @classproperty
+    @classmethod
+    def default_config(cls):
+        creature = camelcase_to_underscore(cls.__name__)
+        base_path = os.path.dirname(__import__(creature).__file__)
+
+        default_config = os.path.join(os.path.join(base_path, 'configuration'),
+                                      '{}.json'.format(creature))
+
+        with open(default_config) as f:
+            return json.load(f)
