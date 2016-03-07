@@ -44,7 +44,8 @@ class AbstractPoppyCreature(Robot):
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969, snap_quiet=True,
                 use_http=False, http_host='0.0.0.0', http_port=8080, http_quiet=True,
                 use_remote=False, remote_host='0.0.0.0', remote_port=4242,
-                start_background_services=True, sync=True):
+                start_background_services=True, sync=True,
+                **extra):
         """ Poppy Creature Factory.
 
         Creates a Robot (real or simulated) and specifies it to make it a specific Poppy Creature.
@@ -64,6 +65,7 @@ class AbstractPoppyCreature(Robot):
         :param int id: id of robot in the v-rep scene (not used yet!)
         :param bool sync: choose if automatically starts the synchronization loops
 
+        You can also add extra keyword arguments to disable sensor. For instance, to use a DummyCamera, you can add the argument: camera='dummy'.
 
         .. warning:: You can not specify a particular config when using a simulated robot!
 
@@ -114,7 +116,7 @@ class AbstractPoppyCreature(Robot):
 
         else:
             try:
-                poppy_creature = from_json(config, sync)
+                poppy_creature = from_json(config, sync, **extra)
             except IndexError as e:
                 raise IOError('Connection to the robot failed! {}'.format(e.message))
             poppy_creature.simulated = False
