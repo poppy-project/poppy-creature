@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import time
+
 import sys
-import webbrowser
+import time
 import logging
 import argparse
+import webbrowser
+
 from argparse import RawTextHelpFormatter
 
 from pypot.server.snap import find_local_ip
@@ -55,12 +57,12 @@ Examples:
     args = parser.parse_args()
 
     if not args.creature:
-        if len(installed_poppy_creatures.keys()) == 1:
-            args.creature = installed_poppy_creatures.keys()[0]
-            print('No creature specified, use {}'.format(installed_poppy_creatures.keys()[0]))
-        else:
+        if len(installed_poppy_creatures.keys()) > 1:
             parser.print_help()
-            sys.exit(0)
+            sys.exit(1)
+
+        args.creature = installed_poppy_creatures.keys()[0]
+        print('No creature specified, use {}'.format(args.creature))
 
     poppy_args = {
         'use_snap': args.snap,
@@ -78,7 +80,7 @@ Examples:
     if args.verbose:
         poppy_args['snap_quiet'] = False
         poppy_args['http_quiet'] = False
-        console = logging.StreamHandler()
+
         if args.verbose == 1:
             lvl = logging.WARNING
         elif args.verbose == 2:
@@ -115,7 +117,6 @@ Examples:
                     except:
                         pass
 
-
         print("Services started")
         try:
             while(True):
@@ -124,5 +125,7 @@ Examples:
             print("Bye bye!")
     else:
         print("No service specified. You want probably use snap")
+
+
 if __name__ == '__main__':
     main()
