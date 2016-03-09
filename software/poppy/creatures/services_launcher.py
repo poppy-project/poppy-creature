@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys
 import time
+import random
 import logging
 import argparse
 import webbrowser
@@ -15,10 +16,47 @@ from pypot.server.snap import find_local_ip
 from . import installed_poppy_creatures
 
 
-def main():
+def start_poppy_with_services(args):
+    params = poppy_params_from_args(args)
+
+    for _ in range(5):
+        try:
+            return installed_poppy_creatures[args.creature](**params)
+
+        except KeyboardInterrupt:
+            # In case of failure,
+            # Give the robot some time to statup, reboot...
+            time.sleep(random.random())
+    else:
+        print('Could not start up the robot...')
+        sys.exit(1)
+
+    return poppy
+
+
+def poppy_params_from_args(args):
+    params = {
+        'use_snap': args.snap,
+        'use_http': args.http,
+        'use_remote': args.remote
+    }
+
+    if args.verbose:
+        params['snap_quiet'] = False
+        params['http_quiet'] = False
+
+    if args.vrep:
+        params['simulator'] = 'vrep'
+    elif args.poppy_simu:
+        params['simulator'] = 'poppy-simu'
+
+    return params
+
+
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description=('Poppy services launcher. Use it to quickly connect a ' +
-                     'poppy creature with Snap!, http server, or a remote robot.'),
+        description=('Poppy services launcher. Use it to quickly instantiate a ' +
+                     'poppy creature with Snap!, an http server, or a remote robot.'),
         epilog="""
 Examples:
 * poppy-services --snap poppy-torso
@@ -56,6 +94,8 @@ Examples:
 
     args = parser.parse_args()
 
+    # If no creature are specified and only one is installed
+    # We use it as default.
     if not args.creature:
         if len(installed_poppy_creatures.keys()) > 1:
             parser.print_help()
@@ -63,12 +103,6 @@ Examples:
 
         args.creature = installed_poppy_creatures.keys()[0]
         print('No creature specified, use {}'.format(args.creature))
-
-    poppy_args = {
-        'use_snap': args.snap,
-        'use_http': args.http,
-        'use_remote': args.remote
-    }
 
     if args.log_file:
         fh = logging.FileHandler(args.log_file)
@@ -78,8 +112,8 @@ Examples:
         logging.getLogger('').addHandler(fh)
 
     if args.verbose:
-        poppy_args['snap_quiet'] = False
-        poppy_args['http_quiet'] = False
+        args.snap_quiet = False
+        args.http_quiet = False
 
         if args.verbose == 1:
             lvl = logging.WARNING
@@ -94,38 +128,30 @@ Examples:
         ch.setFormatter(formatter)
         logging.getLogger('').addHandler(ch)
 
-    if any([args.snap, args.http, args.remote, args.poppy_simu]):
-        if args.vrep:
-            poppy_args['simulator'] = 'vrep'
-        elif args.poppy_simu:
-            poppy_args['simulator'] = 'poppy-simu'
+    if not any([args.snap, args.http, args.remote, args.poppy_simu]):
+        print('No service specified! See --help for details.')
+        sys.exit(1)
 
-        poppy = installed_poppy_creatures[args.creature](**poppy_args)
+    poppy = start_poppy_with_services(args)
 
-        if args.snap:
-            snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
-            block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), poppy.snap.port)
-            url = '{}#open:{}'.format(snap_url, block_url)
+    if args.snap and not args.no_browser:
+        snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
+        block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), poppy.snap.port)
+        url = '{}#open:{}'.format(snap_url, block_url)
 
-            if not args.no_browser:
-                for bowser_name in ['chromium-browser', 'chromium', 'google-chrome',
-                                    'chrome', 'safari', 'midori', None]:
-                    try:
-                        browser = webbrowser.get(bowser_name)
-                        browser.open(url, new=0, autoraise=True)
-                        break
-                    except:
-                        pass
+        for browser_name in ['chromium-browser', 'chromium', 'google-chrome',
+                             'chrome', 'safari', 'midori', None]:
+            try:
+                browser = webbrowser.get(browser_name)
+                browser.open(url, new=0, autoraise=True)
+                break
+            except:
+                pass
 
-        print("Services started")
-        try:
-            while(True):
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("Bye bye!")
-    else:
-        print("No service specified. You want probably use snap")
+    # Just run4ever (until Ctrl-c...)
 
-
-if __name__ == '__main__':
-    main()
+    try:
+        while(True):
+            time.sleep(1000)
+    except KeyboardInterrupt:
+        print("Bye bye!")
