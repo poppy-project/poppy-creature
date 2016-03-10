@@ -9,6 +9,7 @@ import logging
 import argparse
 import webbrowser
 
+from contextlib import closing
 from argparse import RawTextHelpFormatter
 
 from pypot.server.snap import find_local_ip
@@ -19,14 +20,16 @@ from . import installed_poppy_creatures
 def start_poppy_with_services(args):
     params = poppy_params_from_args(args)
 
-    for _ in range(5):
+    for i in range(5):
         try:
+            print('Attempt {} to start the robot...'.format(i + 1))
             return installed_poppy_creatures[args.creature](**params)
 
-        except KeyboardInterrupt:
+        except Exception as e:
             # In case of failure,
             # Give the robot some time to statup, reboot...
             time.sleep(random.random())
+            print(e)
     else:
         print('Could not start up the robot...')
         sys.exit(1)
@@ -37,6 +40,7 @@ def start_poppy_with_services(args):
 def poppy_params_from_args(args):
     params = {
         'use_snap': args.snap,
+        'snap_port': args.snap_port,
         'use_http': args.http,
         'use_remote': args.remote
     }
@@ -76,6 +80,9 @@ Examples:
     parser.add_argument('--snap',
                         help='start a Snap! robot server',
                         action='store_true')
+    parser.add_argument('--snap-port',
+                        help='port used by the Snap! server',
+                        default=6969, type=int)
     parser.add_argument('-nb', '--no-browser',
                         help='avoid automatic start of Snap! in web browser',
                         action='store_true')
@@ -92,12 +99,19 @@ Examples:
                         help='Log filename',
                         action='store')
 
+    nb_creatures = len(installed_poppy_creatures.keys())
+    if nb_creatures == 0:
+        print('No installed poppy creature were found!')
+        print('You should first install the python package '
+              'corresponding to your robot or check your python environment.')
+        sys.exit(1)
+
     args = parser.parse_args()
 
     # If no creature are specified and only one is installed
     # We use it as default.
-    if not args.creature:
-        if len(installed_poppy_creatures.keys()) > 1:
+    if args.creature is None:
+        if nb_creatures > 1:
             parser.print_help()
             sys.exit(1)
 
@@ -122,7 +136,11 @@ Examples:
         elif args.verbose > 2:
             lvl = logging.DEBUG
 
-        ch = logging.FileHandler(args.log_file)
+        if args.log_file is not None:
+            ch = logging.FileHandler(args.log_file)
+        else:
+            ch = logging.StreamHandler()
+
         ch.setLevel(lvl)
         formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
         ch.setFormatter(formatter)
@@ -132,11 +150,9 @@ Examples:
         print('No service specified! See --help for details.')
         sys.exit(1)
 
-    poppy = start_poppy_with_services(args)
-
     if args.snap and not args.no_browser:
         snap_url = 'http://snap.berkeley.edu/snapsource/snap.html'
-        block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), poppy.snap.port)
+        block_url = 'http://{}:{}/snap-blocks.xml'.format(find_local_ip(), args.snap_port)
         url = '{}#open:{}'.format(snap_url, block_url)
 
         for browser_name in ['chromium-browser', 'chromium', 'google-chrome',
@@ -148,10 +164,11 @@ Examples:
             except:
                 pass
 
-    # Just run4ever (until Ctrl-c...)
-
-    try:
-        while(True):
-            time.sleep(1000)
-    except KeyboardInterrupt:
-        print("Bye bye!")
+    with closing(start_poppy_with_services(args)) as poppy:
+        print('Robot created and running!')
+        # Just run4ever (until Ctrl-c...)
+        try:
+            while(True):
+                time.sleep(1000)
+        except KeyboardInterrupt:
+            print("Bye bye!")
