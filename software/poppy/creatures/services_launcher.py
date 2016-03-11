@@ -54,6 +54,9 @@ def poppy_params_from_args(args):
     elif args.poppy_simu:
         params['simulator'] = 'poppy-simu'
 
+    if args.disable_camera:
+        params['camera'] = 'dummy'
+
     return params
 
 
@@ -91,6 +94,9 @@ Examples:
                         action='store_true')
     parser.add_argument('--remote',
                         help='start a remote robot server',
+                        action='store_true')
+    parser.add_argument('--disable-camera',
+                        help='Start the robot without the camera.',
                         action='store_true')
     parser.add_argument('-v', '--verbose',
                         help='start services with verbose mode. There is 3 debug levels, add as "v" as debug level you want',
