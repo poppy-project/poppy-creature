@@ -1,5 +1,6 @@
 import sys
 
+from ._version import __version__
 from .abstractcreature import AbstractPoppyCreature
 
 module = sys.modules[__name__]

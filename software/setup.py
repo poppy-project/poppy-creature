@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 def version():
-    with open('poppy/_version.py') as f:
+    with open('poppy/creatures/_version.py') as f:
         return re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read()).group(1)
 
 extra = {}
