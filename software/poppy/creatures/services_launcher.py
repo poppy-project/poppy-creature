@@ -58,7 +58,7 @@ def poppy_params_from_args(args):
     return params
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         description=('Poppy services launcher. Use it to quickly instantiate a ' +
                      'poppy creature with Snap!, an http server, or a remote robot.'),
@@ -176,3 +176,7 @@ Examples:
                 time.sleep(1000)
         except KeyboardInterrupt:
             print("Bye bye!")
+
+
+if __name__ == '__main__':
+    main()
