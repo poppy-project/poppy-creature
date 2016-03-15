@@ -6,7 +6,7 @@ from __future__ import print_function
 Poppy configuration tools
 
 Examples:
-* poppy-configure motor ergo-jr m2
+* poppy-configure ergo-jr m2
 
 """
 import sys
@@ -42,11 +42,10 @@ def main():
 
     args = parser.parse_args()
 
-
     RobotCls = installed_poppy_creatures['poppy-{}'.format(args.robot)]
     c = RobotCls.default_config
 
-    if not args.motor in c['motors']:
+    if args.motor not in c['motors']:
         print('"{}" is not a motor of "{}"! '
               'possibilities={}'.format(args.motor, args.robot,
                                         sorted(c['motors'].keys())))
