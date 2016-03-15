@@ -34,8 +34,6 @@ def start_poppy_with_services(args):
         print('Could not start up the robot...')
         sys.exit(1)
 
-    return poppy
-
 
 def poppy_params_from_args(args):
     params = {
@@ -170,7 +168,7 @@ Examples:
             except:
                 pass
 
-    with closing(start_poppy_with_services(args)) as poppy:
+    with closing(start_poppy_with_services(args)):
         print('Robot created and running!')
         # Just run4ever (until Ctrl-c...)
         try:
