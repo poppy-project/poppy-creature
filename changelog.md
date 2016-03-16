@@ -3,9 +3,9 @@
 # Version 1.8
 ## Features
 * Integration of the inverse kinematics for creature thanks to [ikpy](https://github.com/Phylliade/ikpy). An URDF file is required to calculate the ik and fk
-* Any service like use_http (HttpRobotServer) or use_snap (SnapRobotServer) is started automaticaly in a daemon thread.
+* Any service like use_http (HttpRobotServer) or use_snap (SnapRobotServer) is started automatically in a daemon thread.
 * poppy-simu can be used as a simulator.
-* hardcode the list of robots to make to make the `from poppy.creatures import ...` faster (it was to slow in the Raspberry Pi).
+* hardcode the list of robots to make to make the `from poppy.creatures import ...` faster (it was too slow in the Raspberry Pi).
 
 ## Bug fixes
 * fix find_local_ip when there is no network
@@ -14,7 +14,7 @@
 
 # Version 1.6
 ## Features
-* poppy-service : allow unspecified creature to be started if only one is installed 
+* poppy-service : allow unspecified creature to be started if only one is installed
 * add poppy-service and make poppy-snap depreciated. poppy-service can also start http and remote servers
 
 ## Bug fixes
