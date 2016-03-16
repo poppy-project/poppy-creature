@@ -170,6 +170,8 @@ Examples:
 
     with closing(start_poppy_with_services(args)):
         print('Robot created and running!')
+        sys.stdout.flush()
+
         # Just run4ever (until Ctrl-c...)
         try:
             while(True):
