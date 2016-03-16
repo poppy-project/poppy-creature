@@ -27,6 +27,11 @@ class DeamonThread(Thread):
             logger.exception("Error on thread %s " % self)
 
 
+class classproperty(property):
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
+
+
 def camelcase_to_underscore(name):
     return re.sub('([a-z])([A-Z0-9])', r'\1_\2', name).lower()
 
@@ -39,7 +44,8 @@ class AbstractPoppyCreature(Robot):
                 use_snap=False, snap_host='0.0.0.0', snap_port=6969, snap_quiet=True,
                 use_http=False, http_host='0.0.0.0', http_port=8080, http_quiet=True,
                 use_remote=False, remote_host='0.0.0.0', remote_port=4242,
-                start_background_services=True, sync=True):
+                start_background_services=True, sync=True,
+                **extra):
         """ Poppy Creature Factory.
 
         Creates a Robot (real or simulated) and specifies it to make it a specific Poppy Creature.
@@ -52,13 +58,14 @@ class AbstractPoppyCreature(Robot):
         :param int port: port of the simulator
         :param bool use_snap: start or not the Snap! API
         :param str snap_host: host of Snap! API
-        :param int snap_port: port of the Snap! 
+        :param int snap_port: port of the Snap!
         :param bool use_http: start or not the HTTP API
         :param str http_host: host of HTTP API
         :param int http_port: port of the HTTP API
         :param int id: id of robot in the v-rep scene (not used yet!)
         :param bool sync: choose if automatically starts the synchronization loops
 
+        You can also add extra keyword arguments to disable sensor. For instance, to use a DummyCamera, you can add the argument: camera='dummy'.
 
         .. warning:: You can not specify a particular config when using a simulated robot!
 
@@ -71,9 +78,11 @@ class AbstractPoppyCreature(Robot):
         base_path = (os.path.dirname(__import__(creature).__file__)
                      if base_path is None else base_path)
 
+        default_config = os.path.join(os.path.join(base_path, 'configuration'),
+                                      '{}.json'.format(creature))
+
         if config is None:
-            config = os.path.join(os.path.join(base_path, 'configuration'),
-                                  '{}.json'.format(creature))
+            config = default_config
 
         if simulator is not None:
             if simulator == 'vrep':
@@ -107,7 +116,7 @@ class AbstractPoppyCreature(Robot):
 
         else:
             try:
-                poppy_creature = from_json(config, sync)
+                poppy_creature = from_json(config, sync, **extra)
             except IndexError as e:
                 raise IOError('Connection to the robot failed! {}'.format(e.message))
             poppy_creature.simulated = False
@@ -127,7 +136,6 @@ class AbstractPoppyCreature(Robot):
             url = '{}#open:{}'.format(snap_url, block_url)
             print('SnapRobotServer is now running on: http://{}:{}\n'.format(snap_host, snap_port))
             print('You can open Snap! interface with loaded blocks at "{}"\n'.format(url))
-
 
         if use_http:
             from pypot.server.httpserver import HTTPRobotServer
@@ -170,3 +178,14 @@ class AbstractPoppyCreature(Robot):
         """
         pass
 
+    @classproperty
+    @classmethod
+    def default_config(cls):
+        creature = camelcase_to_underscore(cls.__name__)
+        base_path = os.path.dirname(__import__(creature).__file__)
+
+        default_config = os.path.join(os.path.join(base_path, 'configuration'),
+                                      '{}.json'.format(creature))
+
+        with open(default_config) as f:
+            return json.load(f)

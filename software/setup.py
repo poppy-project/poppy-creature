@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 def version():
-    with open('poppy/_version.py') as f:
+    with open('poppy/creatures/_version.py') as f:
         return re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read()).group(1)
 
 extra = {}
@@ -18,9 +18,7 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot[http-server]>=2.9.0', 'bottle', 'ikpy', 'zeroconf==0.17.4'],
-
-      setup_requires=['setuptools_git >= 0.3', ],
+      install_requires=['pypot>=2.11.0', 'bottle', 'ikpy>=2.0'],
 
       include_package_data=True,
       exclude_package_data={'': ['README.md', '.gitignore']},
@@ -32,6 +30,7 @@ setup(name='poppy-creature',
               'poppy-shell=poppy.creatures.poppy_sim:main',
               'poppy-snap=poppy.creatures.snap_launcher:main',
               'poppy-services=poppy.creatures.services_launcher:main',
+              'poppy-configure=poppy.creatures.configure:main',
               'poppy-discover=poppy.creatures.poppy_discover:main',
           ],
       },
