@@ -1,0 +1,50 @@
+package:
+  name: poppy-creature
+  # version automatically set in the build.sh and blt.bat
+
+source:
+  path: ../
+
+
+build:
+  entry_points:
+    - poppy-shell = poppy.creatures.poppy_sim:main
+    - poppy-snap = poppy.creatures.snap_launcher:main
+    - poppy-services = poppy.creatures.services_launcher:main
+    - poppy-configure = poppy.creatures.configure:main
+    - poppy-discover = poppy.creatures.poppy_discover:main
+
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  number: 0
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pypot >2.11
+    - bottle
+    - ikpy >=2
+
+  run:
+    - python
+    - ipython
+    - pypot >2.11
+    - bottle
+    - ikpy >=2
+
+test:
+
+  # Python imports
+  imports:
+    - poppy
+    - poppy.creatures
+
+  commands:
+    - poppy-shell --help
+    - poppy-snap --help
+
+about:
+  home: https://github.com/poppy-project/poppy-creature
+  summary: 'Abstract Poppy Creature Software Library'
+  license: GNU GENERAL PUBLIC LICENSE Version 3
