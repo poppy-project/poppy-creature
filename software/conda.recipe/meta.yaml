@@ -24,6 +24,7 @@ requirements:
     - setuptools
     - pypot >2.11
     - bottle
+    - tornado
     - ikpy >=2
 
   run:
@@ -31,6 +32,7 @@ requirements:
     - ipython
     - pypot >2.11
     - bottle
+    - tornado
     - ikpy >=2
 
 test:
