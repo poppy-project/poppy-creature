@@ -7,7 +7,8 @@ module = sys.modules[__name__]
 
 
 installed_poppy_creatures = {}
-existing_creatures = ['poppy-humanoid', 'poppy-torso', 'poppy-ergo-jr', 'poppy-4dof-arm-mini', 'poppy-6dof-right-arm', 'poppy-dragster-mini']
+# Feel free to make a pull request to add your own creature here
+existing_creatures = ['poppy-humanoid', 'poppy-torso', 'poppy-ergo-jr', 'poppy-4dof-arm-mini', 'poppy-6dof-right-arm', 'poppy-dragster-mini', 'poppy-ergo']
 
 
 for creature in existing_creatures:
