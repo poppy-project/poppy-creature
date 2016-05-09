@@ -40,6 +40,7 @@ def poppy_params_from_args(args):
         'use_snap': args.snap,
         'snap_port': args.snap_port,
         'use_http': args.http,
+        'http_port': args.http_port,
         'use_remote': args.remote
     }
 
@@ -90,6 +91,9 @@ Examples:
     parser.add_argument('--http',
                         help='start a http robot server',
                         action='store_true')
+    parser.add_argument('--http-port',
+                        help='port of HttpRobotServer, used for poppy-simu',
+                        default=8080, type=int)
     parser.add_argument('--remote',
                         help='start a remote robot server',
                         action='store_true')
