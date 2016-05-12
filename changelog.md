@@ -6,11 +6,14 @@
 * Any service like use_http (HttpRobotServer) or use_snap (SnapRobotServer) is started automatically in a daemon thread.
 * poppy-simu can be used as a simulator.
 * hardcode the list of robots to make to make the `from poppy.creatures import ...` faster (it was too slow in the Raspberry Pi).
+* Add http port args in services launcher
+* Add PoppyErgo as one of the possible creature
 
 ## Bug fixes
 * fix find_local_ip when there is no network
 * poppy-service start Snap! in a chrome based browser if aivailable instead of the default one
 * fix camelcase_to_underscore issue
+* manifest path
 
 # Version 1.6
 ## Features
