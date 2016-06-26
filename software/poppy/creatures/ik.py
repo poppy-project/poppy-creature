@@ -31,7 +31,8 @@ class IKChain(Chain):
         chain = cls.from_urdf_file(poppy.urdf_file,
                                    base_elements=chain_elements,
                                    last_link_vector=tip,
-                                   active_links_mask=activ)
+                                   active_links_mask=activ,
+                                   name=name)
 
         chain.motors = [getattr(poppy, l.name) for l in chain.links[1:-1]]
 

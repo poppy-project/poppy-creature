@@ -18,7 +18,7 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot>=2.11.0', 'bottle', 'tornado', 'ikpy>=2.2'],
+      install_requires=['pypot>=2.11.0', 'bottle', 'tornado', 'ikpy>=2.2.1'],
 
       include_package_data=True,
       exclude_package_data={'': ['README.md', '.gitignore']},
