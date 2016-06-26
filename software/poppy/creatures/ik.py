@@ -77,7 +77,7 @@ class IKChain(Chain):
         self._goto(M, duration, wait, accurate)
 
     def __repr__(self):
-        return "Kinematic chain name={} motors={}".format(self.name, self.motors)
+        return "Kinematic chain name={}".format(self.name)
 
     def _goto(self, pose, duration, wait, accurate):
         """ Goes to a given cartesian pose.
