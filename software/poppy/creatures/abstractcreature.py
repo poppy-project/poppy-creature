@@ -148,6 +148,8 @@ class AbstractPoppyCreature(Robot):
             poppy_creature.remote = RemoteRobotServer(poppy_creature, remote_host, remote_port)
             print('RemoteRobotServer is now running on: http://{}:{}\n'.format(remote_host, remote_port))
 
+        poppy_creature.kinematic_chains = []
+
         cls.setup(poppy_creature)
 
         if start_background_services:
