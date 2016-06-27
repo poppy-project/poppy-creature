@@ -12,7 +12,8 @@ class IKChain(Chain):
     """
     @classmethod
     def from_poppy_creature(cls, poppy, motors, passiv, tip,
-                            reversed_motors=[], name="chain"):
+                            reversed_motors=[],
+                            name='chain'):
         """ Creates an kinematic chain from motors of a Poppy Creature.
 
             :param poppy: PoppyCreature used
@@ -77,7 +78,7 @@ class IKChain(Chain):
         self._goto(M, duration, wait, accurate)
 
     def __repr__(self):
-        return "Kinematic chain name={}".format(self.name)
+        return 'Kinematic chain "{}"'.format(self.name)
 
     def _goto(self, pose, duration, wait, accurate):
         """ Goes to a given cartesian pose.
