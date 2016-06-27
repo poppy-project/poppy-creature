@@ -128,5 +128,8 @@ class IKChain(Chain):
                 for j, m in zip(joints, self.motors)]
 
     def register(self, robot):
+        if hasattr(robot, self.name):
+            raise AttributeError('Robot has already an attribute named {}'.format(self.name))
+
         setattr(robot, self.name, self)
         robot.kinematic_chains.append(self)
