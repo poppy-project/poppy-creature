@@ -1,5 +1,9 @@
 #  Changelog
 
+# Version 1.9
+
+The package poppy-creature is now integrated in [pypot](https://github.com/poppy-project/pypot)>=3. and is thus now deprecated. It is only kept as compatibility issue.
+
 # Version 1.8
 ## Features
 * Integration of the inverse kinematics for creature thanks to [ikpy](https://github.com/Phylliade/ikpy). An URDF file is required to calculate the ik and fk
@@ -11,7 +15,7 @@
 
 ## Bug fixes
 * fix find_local_ip when there is no network
-* poppy-service start Snap! in a chrome based browser if aivailable instead of the default one
+* poppy-service start Snap! in a chrome based browser if available instead of the default one
 * fix camelcase_to_underscore issue
 * manifest path
 
