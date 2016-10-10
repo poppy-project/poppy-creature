@@ -12,6 +12,7 @@ from pypot.server.snap import SnapRobotServer, find_local_ip
 
 logger = logging.getLogger(__name__)
 SERVICE_THREADS = {}
+MAX_SETUP_TRIALS = 10
 
 
 class DeamonThread(Thread):
@@ -115,10 +116,13 @@ class AbstractPoppyCreature(Robot):
             poppy_creature.simulated = True
 
         else:
-            try:
-                poppy_creature = from_json(config, sync, **extra)
-            except IndexError as e:
-                raise IOError('Connection to the robot failed! {}'.format(str(e)))
+            for _ in range(MAX_SETUP_TRIALS):
+                try:
+                    poppy_creature = from_json(config, sync, **extra)
+                    print('Init successful')
+                    break
+                except Exception as e:
+                    print('Fail: {}'.format(str(e)))
             poppy_creature.simulated = False
 
         with open(config) as f:
