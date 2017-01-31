@@ -1,6 +1,6 @@
 #  Changelog
 
-# Version 1.9
+# Version 2.0.0
 
 The package poppy-creature is now integrated in [pypot](https://github.com/poppy-project/pypot)>=3. and is thus now deprecated. It is only kept as compatibility issue.
 

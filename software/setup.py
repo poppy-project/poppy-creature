@@ -18,14 +18,14 @@ setup(name='poppy-creature',
       version=version(),
       packages=find_packages(),
 
-      install_requires=['pypot>=3.0.0a'],
+      install_requires=['pypot>=3.0.0'],
 
       include_package_data=True,
       exclude_package_data={'': ['README.md', '.gitignore']},
 
       zip_safe=False,
 
-      author='Pierre Rouanet, Matthieu Lapeyre',
+      author='See https://github.com/poppy-project/pypot/graphs/contributors',
       author_email='pierre.rouanet@gmail.com',
       description='Abstract Poppy Creature Software Library',
       url='https://github.com/poppy-project/poppy-creature',

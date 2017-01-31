@@ -22,7 +22,7 @@ requirements:
   build:
     - python
     - setuptools
-    - pypot >2.11
+    - pypot >3.0
     - bottle
     - tornado
     - ikpy >=2
@@ -30,7 +30,7 @@ requirements:
   run:
     - python
     - ipython
-    - pypot >2.11
+    - pypot >3.0
     - bottle
     - tornado
     - ikpy >=2
